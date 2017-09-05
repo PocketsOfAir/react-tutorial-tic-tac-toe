@@ -11,11 +11,11 @@ function Square(props) {
 }
 
 class Board extends React.Component {
-  renderSquare(i) {
+  renderSquare(i, j) {
     return (
       <Square
-        value={this.props.squares[i]}
-        onClick={() => this.props.onClick(i)}
+        value={this.props.squares[i][j]}
+        onClick={() => this.props.onClick(i, j)}
       />
     );
   }
@@ -24,20 +24,20 @@ class Board extends React.Component {
     return (
       <div>
         <div className="board-row">
-          {this.renderSquare(0)}
-          {this.renderSquare(1)}
-          {this.renderSquare(2)}
+          {this.renderSquare(0, 0)}
+          {this.renderSquare(0, 1)}
+          {this.renderSquare(0, 2)}
         </div>
         <div className="board-row">
-          {this.renderSquare(3)}
-          {this.renderSquare(4)}
-          {this.renderSquare(5)}
-        </div>
+          {this.renderSquare(1, 0)}
+          {this.renderSquare(1, 1)}
+          {this.renderSquare(1, 2)}
+      </div>
         <div className="board-row">
-          {this.renderSquare(6)}
-          {this.renderSquare(7)}
-          {this.renderSquare(8)}
-        </div>
+          {this.renderSquare(2, 0)}
+          {this.renderSquare(2, 1)}
+          {this.renderSquare(2, 2)}
+      </div>
       </div>
     );
   }
@@ -48,7 +48,11 @@ class Game extends React.Component {
     super();
     this.state = {
       history: [{
-        squares: Array(9).fill(null),
+        squares: [
+          Array(3).fill(null),
+          Array(3).fill(null),
+          Array(3).fill(null),
+        ],
       }],
       stepNumber: 0,
       xIsNext: true,
@@ -62,7 +66,7 @@ render() {
 
     const moves = history.map((step, move) => {
       const desc = move ?
-        'Move#' + move :
+        'Move# ' + move :
         'Game start';
       return (
         <li key={move}>
@@ -83,7 +87,7 @@ render() {
         <div className="game-board">
           <Board
             squares={current.squares}
-            onClick={(i) => this.handleClick(i)}
+            onClick={(i, j) => this.handleClick(i, j)}
           />
         </div>
         <div className="game-info">
@@ -94,14 +98,14 @@ render() {
     );
   }
 
-  handleClick(i) {
+  handleClick(i, j) {
     const history = this.state.history.slice(0, this.state.stepNumber + 1);
     const current = history[history.length - 1];
-    const squares = current.squares.slice();
-    if (calculateWinner(squares) || squares[i]) {
+    const squares = JSON.parse(JSON.stringify(current.squares));
+    if (calculateWinner(squares) || squares[i][j]) {
       return;
     }
-    squares[i] = this.state.xIsNext ? 'X' : 'O';
+    squares[i][j] = this.state.xIsNext ? 'X' : 'O';
     this.setState({
       history: history.concat([{
         squares: squares,
@@ -121,19 +125,19 @@ render() {
 
 function calculateWinner(squares) {
   const lines = [
-    [0, 1, 2],
-    [3, 4, 5],
-    [6, 7, 8],
-    [0, 3, 6],
-    [1, 4, 7],
-    [2, 5, 8],
-    [0, 4, 8],
-    [2, 4, 6],
+    [[0,0], [0,1], [0,2]],
+    [[1,0], [1,1], [1,2]],
+    [[2,0], [2,1], [2,2]],
+    [[0,0], [1,0], [2,0]],
+    [[0,1], [1,1], [2,1]],
+    [[0,2], [1,2], [2,2]],
+    [[0,0], [1,1], [2,2]],
+    [[2,0], [1,1], [0,2]],
   ];
   for (let i = 0; i < lines.length; i++) {
     const [a, b, c] = lines[i];
-    if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-      return squares[a];
+    if (squares[a[0]][a[1]] && squares[a[0]][a[1]] === squares[b[0]][b[1]] && squares[a[0]][a[1]] === squares[c[0]][c[1]]) {
+      return squares[a[0]][a[1]];
     }
   }
   return null;
