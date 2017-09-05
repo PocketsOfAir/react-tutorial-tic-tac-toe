@@ -63,14 +63,21 @@ render() {
     const history = this.state.history;
     const current = history[this.state.stepNumber];
     const winner = calculateWinner(current.squares);
-
     const moves = history.map((step, move) => {
-      const desc = move ?
+      const zeroedMove = move ? move : 0;
+      const textStyle = {
+        'font-weight': (zeroedMove === this.state.stepNumber ? 'bold' : 'normal'),
+      };
+        const desc = move ?
         'Move# ' + move :
         'Game start';
       return (
         <li key={move}>
-          <a href="#" onClick={() => this.jumpTo(move)}>{desc}</a>
+          <a
+            style={textStyle}
+            href="#"
+            onClick={() => this.jumpTo(move)}>
+              {desc}</a>
         </li>
       );
     });
