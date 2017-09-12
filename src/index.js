@@ -2,9 +2,9 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 
-function Square(props) {
+function Button(props) {
   return (
-    <button className="square" onClick={props.onClick}>
+    <button className={props.name} onClick={props.onClick}>
       {props.value}
     </button>
   );
@@ -13,7 +13,8 @@ function Square(props) {
 class Board extends React.Component {
   renderSquare(i, j) {
     return (
-      <Square
+      <Button
+        name={"square"}
         value={this.props.squares[i][j]}
         onClick={() => this.props.onClick(i, j)}
       />
@@ -60,6 +61,7 @@ class Game extends React.Component {
       }],
       stepNumber: 0,
       xIsNext: true,
+      reverseMoves: false,
     };
 }
 
@@ -68,19 +70,21 @@ render() {
     const current = history[this.state.stepNumber];
     const winner = calculateWinner(current.squares);
     const moves = history.map((step, move) => {
-      const zeroedMove = move ? move : 0;
+      let zeroedMove = move ? move : 0;
+      if (this.state.reverseMoves)
+        zeroedMove = history.length - zeroedMove - 1;
       const textStyle = {
         'font-weight': (zeroedMove === this.state.stepNumber ? 'bold' : 'normal'),
       };
-        const desc = move ?
-        'Move# ' + move :
+        const desc = zeroedMove != 0 ?
+        'Move# ' + zeroedMove :
         'Game start';
       return (
-        <li key={move}>
+        <li key={zeroedMove}>
           <a
             style={textStyle}
             href="#"
-            onClick={() => this.jumpTo(move)}>
+            onClick={() => this.jumpTo(zeroedMove)}>
               {desc}</a>
         </li>
       );
@@ -103,6 +107,13 @@ render() {
         </div>
         <div className="game-info">
           <div>{status}</div>
+          <div>
+            <Button
+              name={"rectangle"}
+              value={"Reverse Moves"}
+              onClick={() => this.toggleMoveOrder()}
+            />
+          </div>
           <ol>{moves}</ol>
         </div>
       </div>
@@ -130,6 +141,12 @@ render() {
     this.setState({
       stepNumber: step,
       xIsNext: (step % 2) === 0,
+    });
+  }
+
+  toggleMoveOrder() {
+    this.setState({
+      reverseMoves: !this.state.reverseMoves,
     });
   }
 }

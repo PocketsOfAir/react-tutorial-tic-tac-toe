@@ -32,11 +32,25 @@ ol, ul {
   width: 34px;
 }
 
-.square:focus {
+.rectangle {
+  background: #fff;
+  border: 1px solid #999;
+  float: left;
+  font-size: 14px;
+  line-height: 24px;
+  height: 24px;
+  margin-right: -1px;
+  margin-top: -1px;
+  padding: 0;
+  text-align: center;
+  width: 100px;
+}
+
+.square:focus .rectangle:focus {
   outline: none;
 }
 
-.kbd-navigation .square:focus {
+.kbd-navigation .square:focus .rectangle:focus {
   background: #ddd;
 }
 
